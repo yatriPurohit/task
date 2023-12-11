@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        form {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        input[type="radio"],
+        input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Add some space between elements for better readability */
+        div {
+            margin-bottom: 10px;
+        }
+
+        /* Style for error messages */
+        #passwordError {
+            color: red;
+            margin-top: 5px;
+        }
+
+        /* Placeholder style for displaying uploaded image */
+        #imageDisplay {
+            max-width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <form id="registrationForm" action="/register" method="post" enctype="multipart/form-data">
+        <div>
+            <label for="firstName">First Name:</label>
+            <input type="text" id="firstName" name="firstName" placeholder="Enter your first name" required>
+        </div>
+
+        <div>
+            <label for="lastName">Last Name:</label>
+            <input type="text" id="lastName" name="lastName" placeholder="Enter your last name" required>
+        </div>
+
+        <div>
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+
+        <div>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*\W).{8,}"
+                title="Password must be 8 characters long, contain at least one digit, one uppercase letter, one lowercase letter, and one special character"
+                placeholder="Enter your password" required>
+        </div>
+
+        <div>
+            <label for="confirmPassword">Confirm Password:</label>
+            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm your password"
+                required>
+            <div id="passwordError"></div>
+        </div>
+
+        <div>
+            <label for="image">Upload Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+        </div>
+
+        <div>
+            <label>Gender:</label>
+            <input type="radio" id="male" name="gender" value="male" required>
+            <label for="male">Male</label>
+            <input type="radio" id="female" name="gender" value="female" required>
+            <label for="female">Female</label>
+        </div>
+
+        <div>
+            <label>Hobbies:</label>
+            <input type="checkbox" id="hobby1" name="hobbies" value="hobby1">
+            <label for="hobby1">Hobby 1</label>
+            <input type="checkbox" id="hobby2" name="hobbies" value="hobby2">
+            <label for="hobby2">Hobby 2</label>
+            <input type="checkbox" id="hobby3" name="hobbies" value="hobby3">
+            <label for="hobby3">Hobby 3</label>
+            <input type="checkbox" id="hobby4" name="hobbies" value="hobby4">
+            <label for="hobby4">Hobby 4</label>
+            <input type="checkbox" id="hobby5" name="hobbies" value="hobby5">
+            <label for="hobby5">Hobby 5</label>
+        </div>
+
+        <button type="submit">Save</button>
+    </form>
+
+    <div id="imageDisplay"></div> 
+
+    <script>
+        document.getElementById("registrationForm").addEventListener("submit", async function (event) {
+            event.preventDefault(); 
+            const password = document.getElementById("password").value;
+            const confirmPassword = document.getElementById("confirmPassword").value;
+
+            // Client-side password matching validation
+            if (password !== confirmPassword) {
+                document.getElementById("passwordError").innerText = "Passwords do not match";
+                return;
+            } else {
+                document.getElementById("passwordError").innerText = "";
+            }
+
+            try {
+                // Make an API request to fetch user data
+                const response = await fetch('http://localhost:3001/register'); 
+                if (!response.ok) {
+                    throw new Error(`Failed to fetch user data: ${response.status}`);
+                }
+
+                const userData = await response.json();
+
+                // Display user data on the page
+                document.getElementById("firstName").value = userData.firstName;
+                document.getElementById("lastName").value = userData.lastName;
+                document.getElementById("email").value = userData.email;
+                document.getElementById("gender").value = userData.gender;
+
+                // Handle hobbies 
+                const hobbies = userData.hobbies;
+                hobbies.forEach(hobby => {
+                    document.getElementById(`hobby${hobby}`).checked = true;
+                });
+
+                // Display uploaded image 
+                const imageDisplay = document.getElementById("imageDisplay");
+                imageDisplay.innerHTML = `<img src="data:${userData.image.contentType};base64,${userData.image.data.toString('base64')}" alt="User Image" />`;
+
+            } catch (error) {
+                console.error(error);
+
+            }
+        });
+    </script>
+</body>
+
+</html>

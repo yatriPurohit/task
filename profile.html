@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        #userDetails {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            text-align: left;
+            width: 400px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 14px;
+        }
+
+        button {
+            background-color: #4caf50;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>User Profile</h1>
+    <div id="userDetails">
+        <label for="firstName">First Name:</label>
+        <input type="text" id="firstName" name="firstName" readonly>
+
+        <label for="lastName">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" readonly>
+
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" readonly>
+
+        <label for="gender">Gender:</label>
+        <input type="text" id="gender" name="gender" readonly>
+
+        <label for="hobbies">Hobbies:</label>
+        <input type="text" id="hobbies" name="hobbies" readonly>
+    </div>
+    <button id="updateProfileBtn">Update Profile</button>
+
+    <!-- Profile update form -->
+    <form id="updateProfileForm" style="display: none" action="/update-profile" method="post">
+        <label for="updatedFirstName">First Name:</label>
+        <input type="text" id="updatedFirstName" name="updatedFirstName" required>
+
+        <label for="updatedLastName">Last Name:</label>
+        <input type="text" id="updatedLastName" name="updatedLastName" required>
+
+        <label for="updatedGender">Gender:</label>
+        <select id="updatedGender" name="updatedGender" required>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+        </select>
+
+        <label>Hobbies:</label>
+        <input type="checkbox" id="updatedHobby1" name="updatedHobbies" value="hobby1">
+        <label for="updatedHobby1">Hobby 1</label>
+        <input type="checkbox" id="updatedHobby2" name="updatedHobbies" value="hobby2">
+        <label for="updatedHobby2">Hobby 2</label>
+        <input type="checkbox" id="updatedHobby3" name="updatedHobbies" value="hobby3">
+        <label for="updatedHobby3">Hobby 3</label>
+
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <script>
+        // Fetch user details and populate the profile initially
+        fetch('/profile-details')
+            .then(response => response.json())
+            .then(user => {
+                document.getElementById('firstName').value = user.firstName;
+                document.getElementById('lastName').value = user.lastName;
+                document.getElementById('email').value = user.email;
+                document.getElementById('gender').value = user.gender;
+
+                // Populate hobbies using checkboxes
+                const userHobbies = user.hobbies;
+                const hobbiesCheckbox = document.getElementById('hobbies');
+                hobbiesCheckbox.value = userHobbies.join(', ');
+            })
+            .catch(error => console.error(error));
+
+        // Add event listener for the update button
+        const updateBtn = document.getElementById('updateProfileBtn');
+        const updateForm = document.getElementById('updateProfileForm');
+
+        updateBtn.addEventListener('click', () => {
+            updateForm.style.display = updateForm.style.display === 'none' ? 'block' : 'none';
+        });
+    </script>
+</body>
+
+</html>
